@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id             String             @id @default(cuid())
+  name           String             @db.VarChar(255)
+  bonusThreshold Int                @default(0)
+  createdAt      DateTime           @default(now())
+  deletedAt      DateTime?
+  discounts      CustomerDiscount[]
+  transactions   Transaction[]
+
+  @@map("customers")
+}
+
+model CustomerDiscount {
+  id         String   @id @default(cuid())
+  customerId String   @map("customer_id")
+  type       String   @db.VarChar(2)
+  stepOrder  Int      @map("step_order")
+  percentage Float
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  @@index([customerId])
+  @@map("customer_discounts")
+}
+
+model Product {
+  id               String            @id @default(cuid())
+  name             String            @db.VarChar(255)
+  costPrice        Int               @map("cost_price")
+  basePrice        Int               @map("base_price")
+  type             String            @db.VarChar(2)
+  createdAt        DateTime          @default(now())
+  deletedAt        DateTime?
+  transactionItems TransactionItem[]
+
+  @@map("products")
+}
+
+model Transaction {
+  id          String            @id @default(cuid())
+  date        DateTime
+  bonNumber   String            @unique @map("bon_number") @db.VarChar(50)
+  customerId  String            @map("customer_id")
+  ongkir      Int               @default(0)
+  description String            @db.Text
+  isBonus     Boolean           @default(false) @map("is_bonus")
+  status      String            @db.VarChar(10)
+  paymentDate DateTime?         @map("payment_date")
+  createdAt   DateTime          @default(now())
+  items       TransactionItem[]
+  customer    Customer          @relation(fields: [customerId], references: [id])
+
+  @@index([customerId])
+  @@index([status])
+  @@map("transactions")
+}
+
+model TransactionItem {
+  id               String      @id @default(cuid())
+  transactionId    String      @map("transaction_id")
+  productId        String      @map("product_id")
+  productName      String      @map("product_name") @db.VarChar(255)
+  productType      String      @map("product_type") @db.VarChar(2)
+  productCostPrice Int         @map("product_cost_price")
+  productBasePrice Int         @map("product_base_price")
+  qty              Int
+  appliedPrice     Float       @map("applied_price")
+  calculatedOmzet  Float       @map("calculated_omzet")
+  calculatedProfit Float       @map("calculated_profit")
+  product          Product     @relation(fields: [productId], references: [id])
+  transaction      Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+  @@index([transactionId])
+  @@index([productId])
+  @@map("transaction_items")
+}
