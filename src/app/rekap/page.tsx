@@ -3,12 +3,8 @@
 import { useState, useEffect, useMemo } from "react"
 import { AppShell } from "@/components/layout/AppShell"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Download, Filter, Gift, BarChart3, Loader2, TrendingUp, DollarSign, FileText } from "lucide-react"
-import {
-  customerService,
-  transactionService,
-} from "@/lib/services"
+import { customerService, transactionService } from "@/lib/services"
 import {
   formatCurrency,
   calculateTransactionTotals,
@@ -26,7 +22,6 @@ import { downloadPdf } from "@/lib/pdf-utils"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { StatCard } from "@/components/shared/StatCard"
 import { SectionCard } from "@/components/shared/SectionCard"
-import { InfoRow } from "@/components/shared/InfoRow"
 import { StatusBadge, BonusPill } from "@/components/shared/StatusBadge"
 import {
   Select,
@@ -103,12 +98,7 @@ export default function RekapPage() {
           totalPaid: 0,
         }
 
-        const { totalOmzet, totalProfit } = calculateTransactionTotals(
-          t.items,
-          t.ongkir,
-          t.status,
-          t.isBonus,
-        )
+        const { totalOmzet, totalProfit } = calculateTransactionTotals(t.items, t.ongkir, t.status, t.isBonus)
 
         existing.totalOmzet += totalOmzet
         existing.totalProfit += totalProfit
@@ -203,20 +193,11 @@ export default function RekapPage() {
         },
       ]
     }
-  }, [
-    transactions,
-    customers,
-    recapType,
-    selectedCustomer,
-    selectedMonth,
-    selectedYear,
-  ])
+  }, [transactions, customers, recapType, selectedCustomer, selectedMonth, selectedYear])
 
-  // KPI totals
   const totalOmzetAll = recapData.reduce((sum, r) => sum + r.totalOmzet, 0)
   const totalProfitAll = recapData.reduce((sum, r) => sum + r.totalProfit, 0)
   const totalPiutangAll = recapData.reduce((sum, r) => sum + r.totalPiutang, 0)
-  const totalPaidAll = recapData.reduce((sum, r) => sum + r.totalPaid, 0)
   const totalTxCount = recapData.length
 
   const handleDownloadPDF = () => {
@@ -242,7 +223,7 @@ export default function RekapPage() {
     return (
       <AppShell>
         <div className="flex items-center justify-center h-64">
-          <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--muted-foreground)" }} />
+          <Loader2 className="h-5 w-5 animate-spin" style={{ color: "var(--muted-foreground)" }} />
         </div>
       </AppShell>
     )
@@ -251,113 +232,107 @@ export default function RekapPage() {
   return (
     <AppShell>
       <div className="space-y-5">
-        {/* Header */}
         <PageHeader
           title="Rekap & Laporan"
           subtitle="Ringkasan transaksi berdasarkan filter"
           accent="slate"
           badge="Laporan"
-           actions={
-            <Button size="sm" variant="ghost" className="gap-1.5 text-white hover:bg-white/20" onClick={handleDownloadPDF}>
-              <Download className="size-4" />
-              <span className="hidden sm:inline">Download PDF</span>
+          actions={
+            <Button size="sm" variant="ghost" className="gap-1.5 text-white hover:bg-white/20 text-xs" onClick={handleDownloadPDF}>
+              <Download className="size-3.5" />
+              <span className="hidden sm:inline">PDF</span>
             </Button>
           }
         />
 
-        {/* Filters */}
-        <SectionCard
-          title="Filter"
-          icon={Filter}
-          iconAccent="slate"
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
-                Tipe Rekap
-              </label>
-              <Select value={recapType} onValueChange={(v) => setRecapType(v as "all" | "customer" | "type")}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Keseluruhan</SelectItem>
-                  <SelectItem value="customer">Per Pelanggan</SelectItem>
-                  <SelectItem value="type">Per Tipe Produk</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {recapType === "customer" && (
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
-                  Pelanggan
+        <SectionCard title="Filter" icon={Filter} iconAccent="slate">
+          <div className="px-4 pb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="space-y-1">
+                <label className="text-[10px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+                  Tipe Rekap
                 </label>
-                <Select value={selectedCustomer} onValueChange={(v) => setSelectedCustomer(v || "all")}>
-                  <SelectTrigger>
+                <Select value={recapType} onValueChange={(v) => setRecapType(v as "all" | "customer" | "type")}>
+                  <SelectTrigger className="h-8 text-xs">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Semua Pelanggan</SelectItem>
-                    {customers.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    <SelectItem value="all">Keseluruhan</SelectItem>
+                    <SelectItem value="customer">Per Pelanggan</SelectItem>
+                    <SelectItem value="type">Per Tipe Produk</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {recapType === "customer" && (
+                <div className="space-y-1">
+                  <label className="text-[10px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+                    Pelanggan
+                  </label>
+                  <Select value={selectedCustomer} onValueChange={(v) => setSelectedCustomer(v || "all")}>
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Pelanggan</SelectItem>
+                      {customers.map((c) => (
+                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+                  Bulan
+                </label>
+                <Select value={selectedMonth} onValueChange={(v) => setSelectedMonth(v || "all")}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua Bulan</SelectItem>
+                    {monthOptions.map((month) => {
+                      const [y, m] = month.split("-")
+                      const date = new Date(Number(y), Number(m) - 1)
+                      return (
+                        <SelectItem key={month} value={month}>
+                          {format(date, "MMMM yyyy", { locale: id })}
+                        </SelectItem>
+                      )
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+                  Tahun
+                </label>
+                <Select value={selectedYear} onValueChange={(v) => setSelectedYear(v || "all")}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua Tahun</SelectItem>
+                    {yearOptions.map((year) => (
+                      <SelectItem key={year} value={String(year)}>{year}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-            )}
-
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
-                Bulan
-              </label>
-              <Select value={selectedMonth} onValueChange={(v) => setSelectedMonth(v || "all")}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua Bulan</SelectItem>
-                  {monthOptions.map((month) => {
-                    const [y, m] = month.split("-")
-                    const date = new Date(Number(y), Number(m) - 1)
-                    return (
-                      <SelectItem key={month} value={month}>
-                        {format(date, "MMMM yyyy", { locale: id })}
-                      </SelectItem>
-                    )
-                  })}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
-                Tahun
-              </label>
-              <Select value={selectedYear} onValueChange={(v) => setSelectedYear(v || "all")}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua Tahun</SelectItem>
-                  {yearOptions.map((year) => (
-                    <SelectItem key={year} value={String(year)}>{year}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
           </div>
         </SectionCard>
 
-        {/* KPI stat cards */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             title="Total Omzet"
             value={formatCurrency(totalOmzetAll)}
             icon={TrendingUp}
             description="Omzet lunas"
             accent="violet"
-            spark={[]}
           />
           <StatCard
             title="Total Laba"
@@ -365,7 +340,6 @@ export default function RekapPage() {
             icon={DollarSign}
             description="Profit HL"
             accent="green"
-            spark={[]}
           />
           <StatCard
             title="Total Piutang"
@@ -373,7 +347,6 @@ export default function RekapPage() {
             icon={Loader2}
             description="Belum lunas"
             accent="amber"
-            spark={[]}
           />
           <StatCard
             title="Total Transaksi"
@@ -381,43 +354,41 @@ export default function RekapPage() {
             icon={FileText}
             description={`${recapData.length} baris data`}
             accent="blue"
-            spark={[]}
           />
         </div>
 
-        {/* Results table */}
         <SectionCard
           title="Hasil Rekap"
           icon={BarChart3}
           iconAccent="blue"
           action={
-            <span className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>
+            <span className="text-[10px] font-medium" style={{ color: "var(--muted-foreground)" }}>
               {recapData.length} {recapType === "customer" ? "pelanggan" : recapType === "type" ? "tipe" : "baris"}
             </span>
           }
         >
-          <div className="rounded-xl ring-1 ring-foreground/[0.06] overflow-hidden">
+          <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr style={{ backgroundColor: "var(--muted)" }}>
                   {recapType === "customer" && (
-                    <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Pelanggan</th>
+                    <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Pelanggan</th>
                   )}
                   {recapType === "type" && (
-                    <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Tipe</th>
+                    <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Tipe</th>
                   )}
-                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Omzet LM</th>
-                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Omzet BR</th>
-                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Total Omzet</th>
-                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Laba HL</th>
-                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Piutang</th>
-                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Sudah Dibayar</th>
+                  <th className="px-3 py-2 text-right text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Omzet LM</th>
+                  <th className="px-3 py-2 text-right text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Omzet BR</th>
+                  <th className="px-3 py-2 text-right text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Total Omzet</th>
+                  <th className="px-3 py-2 text-right text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Laba HL</th>
+                  <th className="px-3 py-2 text-right text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Piutang</th>
+                  <th className="px-3 py-2 text-right text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Dibayar</th>
                 </tr>
               </thead>
               <tbody>
                 {recapData.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-4 py-10 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>
+                    <td colSpan={8} className="px-3 py-8 text-center text-xs" style={{ color: "var(--muted-foreground)" }}>
                       Tidak ada data
                     </td>
                   </tr>
@@ -425,23 +396,25 @@ export default function RekapPage() {
                   recapData.map((recap, index) => (
                     <tr
                       key={index}
-                      className="border-t last:border-0 transition-colors duration-100 hover:bg-muted/50"
+                      className="border-t transition-colors hover:bg-muted/50"
                       style={{ borderColor: "var(--border)" }}
                     >
                       {recapType === "customer" && (
-                        <td className="px-4 py-3 text-sm font-medium">{recap.customerName || "—"}</td>
+                        <td className="px-3 py-2.5 text-xs font-medium">{recap.customerName || "—"}</td>
                       )}
                       {recapType === "type" && (
-                        <td className="px-4 py-3">
-                          <StatusBadge variant={recap.type === "LM" ? "success" : "info"}>{recap.type}</StatusBadge>
+                        <td className="px-3 py-2.5">
+                          <StatusBadge variant={recap.type === "LM" ? "success" : "info"}>
+                            <span className="text-[10px]">{recap.type}</span>
+                          </StatusBadge>
                         </td>
                       )}
-                      <td className="px-4 py-3 text-sm text-right tabular-nums">{formatCurrency(recap.totalOmzetLM)}</td>
-                      <td className="px-4 py-3 text-sm text-right tabular-nums">{formatCurrency(recap.totalOmzetBR)}</td>
-                      <td className="px-4 py-3 text-sm text-right font-medium tabular-nums">{formatCurrency(recap.totalOmzet)}</td>
-                      <td className="px-4 py-3 text-sm text-right tabular-nums" style={{ color: "var(--success)" }}>{formatCurrency(recap.totalProfit)}</td>
-                      <td className="px-4 py-3 text-sm text-right tabular-nums" style={{ color: "var(--warning)" }}>{formatCurrency(recap.totalPiutang)}</td>
-                      <td className="px-4 py-3 text-sm text-right tabular-nums">{formatCurrency(recap.totalPaid)}</td>
+                      <td className="px-3 py-2.5 text-xs text-right tabular-nums">{formatCurrency(recap.totalOmzetLM)}</td>
+                      <td className="px-3 py-2.5 text-xs text-right tabular-nums">{formatCurrency(recap.totalOmzetBR)}</td>
+                      <td className="px-3 py-2.5 text-xs text-right font-medium tabular-nums">{formatCurrency(recap.totalOmzet)}</td>
+                      <td className="px-3 py-2.5 text-xs text-right tabular-nums" style={{ color: "var(--success)" }}>{formatCurrency(recap.totalProfit)}</td>
+                      <td className="px-3 py-2.5 text-xs text-right tabular-nums" style={{ color: "var(--warning)" }}>{formatCurrency(recap.totalPiutang)}</td>
+                      <td className="px-3 py-2.5 text-xs text-right tabular-nums">{formatCurrency(recap.totalPaid)}</td>
                     </tr>
                   ))
                 )}
@@ -450,9 +423,8 @@ export default function RekapPage() {
           </div>
         </SectionCard>
 
-        {/* Bonus log */}
         <SectionCard title="Bonus Log" icon={Gift} iconAccent="violet">
-          <div className="space-y-3">
+          <div className="px-4 pb-4 space-y-2">
             {customers
               .filter(c => c.bonusThreshold > 0)
               .map(c => {
@@ -464,30 +436,30 @@ export default function RekapPage() {
                 return (
                   <div
                     key={c.id}
-                    className="flex items-center justify-between gap-4 rounded-xl px-4 py-3 ring-1 ring-foreground/[0.06] transition-colors hover:bg-muted/50"
-                    style={{ backgroundColor: "var(--card)" }}
+                    className="flex items-center justify-between gap-4 rounded-lg px-3 py-2.5 ring-1 transition-colors hover:bg-muted/50"
+                    style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}
                   >
                     <div>
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-semibold">{c.name}</p>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-semibold">{c.name}</span>
                         <BonusPill />
                       </div>
-                      <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)" }}>
+                      <span className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>
                         Ambang: {formatCurrency(c.bonusThreshold)}
-                      </p>
+                      </span>
                     </div>
-                    <div className="flex items-center gap-6 text-xs">
+                    <div className="flex items-center gap-4 text-[10px]">
                       <div className="text-right">
-                        <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Tersedia</p>
-                        <p className="text-sm font-bold" style={{ color: "oklch(0.45 0.18 300)" }}>{summary.bonusAvailable}</p>
+                        <p className="font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Tersedia</p>
+                        <p className="text-xs font-bold" style={{ color: "oklch(0.45 0.18 300)" }}>{summary.bonusAvailable}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Diberikan</p>
-                        <p className="text-sm font-bold">{granted}</p>
+                        <p className="font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Diberikan</p>
+                        <p className="text-xs font-bold">{granted}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Carry-over</p>
-                        <p className="text-sm font-medium tabular-nums">{formatCurrency(summary.bonusCarryOver)}</p>
+                        <p className="font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Carry-over</p>
+                        <p className="text-xs font-medium tabular-nums">{formatCurrency(summary.bonusCarryOver)}</p>
                       </div>
                     </div>
                   </div>
@@ -495,7 +467,7 @@ export default function RekapPage() {
               })
               .filter(Boolean)}
             {customers.filter(c => c.bonusThreshold > 0).length === 0 && (
-              <p className="text-sm text-center py-4" style={{ color: "var(--muted-foreground)" }}>
+              <p className="text-xs text-center py-3" style={{ color: "var(--muted-foreground)" }}>
                 Belum ada pelanggan dengan ambang bonus
               </p>
             )}

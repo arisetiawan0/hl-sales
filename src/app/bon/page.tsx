@@ -64,7 +64,6 @@ export default function BonPage() {
     return matchesSearch && matchesStatus
   })
 
-  // Compute stats
   const stats = useMemo(() => {
     const total = transactions.length
     const lunas = transactions.filter((t) => t.status === 'LUNAS').length
@@ -75,10 +74,10 @@ export default function BonPage() {
     }, 0)
 
     return [
-      { label: 'Total Transaksi', value: total, icon: FileText },
+      { label: 'Total', value: total, icon: FileText },
       { label: 'Lunas', value: lunas, icon: CheckCircle2 },
       { label: 'Piutang', value: piutang, icon: AlertCircle },
-      { label: 'Total Omzet', value: formatCurrency(totalOmzet), icon: FileText },
+      { label: 'Omzet', value: formatCurrency(totalOmzet), icon: FileText },
     ]
   }, [transactions])
 
@@ -102,7 +101,7 @@ export default function BonPage() {
     return (
       <AppShell>
         <div className="flex items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'var(--muted-foreground)' }} />
+          <Loader2 className="h-5 w-5 animate-spin" style={{ color: 'var(--muted-foreground)' }} />
         </div>
       </AppShell>
     )
@@ -110,7 +109,7 @@ export default function BonPage() {
 
   return (
     <AppShell>
-      <div className="space-y-6">
+      <div className="space-y-5">
         <PageHeader
           title="Bon (Transaksi)"
           subtitle="Kelola transaksi penjualan HL Sales"
@@ -119,62 +118,60 @@ export default function BonPage() {
           stats={stats}
           actions={
             <Link href="/bon/tambah">
-              <Button size="sm" className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm">
-                <FileText className="mr-1.5 h-4 w-4" />
-                Buat Bon Baru
+              <Button size="sm" className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm text-xs">
+                <FileText className="mr-1.5 size-3.5" />
+                Buat Bon
               </Button>
             </Link>
           }
         />
 
-        {/* Filter bar */}
-        <div className="flex items-center gap-3">
-          <div className="relative flex-1 max-w-sm">
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1 max-w-xs">
             <Input
-              placeholder="Cari nomor bon atau pelanggan..."
+              placeholder="Cari bon atau pelanggan..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
+              className="h-9 text-xs"
             />
           </div>
           <Select value={filterStatus} onValueChange={(v) => v && setFilterStatus(v)}>
-            <SelectTrigger className="w-36">
-              <SelectValue placeholder="Semua Status" />
+            <SelectTrigger className="w-32 h-9 text-xs">
+              <SelectValue placeholder="Semua" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Semua Status</SelectItem>
+              <SelectItem value="all">Semua</SelectItem>
               <SelectItem value="PIUTANG">Piutang</SelectItem>
               <SelectItem value="LUNAS">Lunas</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        {/* Table */}
-        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: 'var(--card)' }}>
-          <Table>
+        <div className="rounded-xl border overflow-x-auto" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
+          <Table className="min-w-[700px]">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">No</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Tanggal</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Nomor Bon</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Pelanggan</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Status</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Total</TableHead>
-                <TableHead className="text-right text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Aksi</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-semibold h-10">No</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-semibold h-10">Tanggal</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-semibold h-10">Nomor Bon</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-semibold h-10">Pelanggan</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-semibold h-10">Status</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-semibold h-10">Total</TableHead>
+                <TableHead className="text-right text-[10px] uppercase tracking-wider font-semibold h-10">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredTransactions.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12">
-                    <div className="flex flex-col items-center gap-2">
-                      <FileText className="h-8 w-8" style={{ color: 'var(--muted-foreground)' }} />
-                      <p className="text-sm font-medium" style={{ color: 'var(--muted-foreground)' }}>
+                  <TableCell colSpan={7} className="text-center py-10">
+                    <div className="flex flex-col items-center gap-1.5">
+                      <FileText className="size-6" style={{ color: 'var(--muted-foreground)' }} />
+                      <p className="text-xs font-medium" style={{ color: 'var(--muted-foreground)' }}>
                         {search || filterStatus !== 'all' ? 'Transaksi tidak ditemukan' : 'Belum ada data transaksi'}
                       </p>
                       {!search && filterStatus === 'all' && (
                         <Link href="/bon/tambah">
-                          <Button variant="link" size="sm">Buat transaksi pertama</Button>
+                          <Button variant="link" size="sm" className="text-xs">Buat transaksi pertama</Button>
                         </Link>
                       )}
                     </div>
@@ -190,39 +187,39 @@ export default function BonPage() {
                     transaction.isBonus
                   )
                   return (
-                    <TableRow key={transaction.id} className="hover:bg-muted/50 transition-colors">
-                      <TableCell className="text-sm text-muted-foreground">{index + 1}</TableCell>
-                      <TableCell className="text-sm">{format(new Date(transaction.date), 'dd/MM/yyyy')}</TableCell>
-                      <TableCell className="font-medium">{transaction.bonNumber}</TableCell>
-                      <TableCell className="text-sm">{customer?.name || '-'}</TableCell>
+                    <TableRow key={transaction.id}>
+                      <TableCell className="text-xs text-muted-foreground">{index + 1}</TableCell>
+                      <TableCell className="text-xs">{format(new Date(transaction.date), 'dd/MM/yy')}</TableCell>
+                      <TableCell className="text-xs font-medium">{transaction.bonNumber}</TableCell>
+                      <TableCell className="text-xs">{customer?.name || '-'}</TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5">
                           <StatusBadge variant={transactionStatusVariant(transaction.status)}>
-                            {transaction.status}
+                            <span className="text-[10px]">{transaction.status}</span>
                           </StatusBadge>
                           {transaction.isBonus && <BonusPill />}
                         </div>
                       </TableCell>
-                      <TableCell className="text-sm font-medium">{formatCurrency(totalTagihan)}</TableCell>
+                      <TableCell className="text-xs font-medium tabular-nums">{formatCurrency(totalTagihan)}</TableCell>
                       <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1">
+                        <div className="flex items-center justify-end gap-0.5">
                           <Link href={`/bon/${transaction.id}`}>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <Eye className="h-4 w-4" />
+                            <Button variant="ghost" size="icon" className="size-7">
+                              <Eye className="size-3.5" />
                             </Button>
                           </Link>
                           <Link href={`/bon/${transaction.id}/edit`}>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <Edit className="h-4 w-4" />
+                            <Button variant="ghost" size="icon" className="size-7">
+                              <Edit className="size-3.5" />
                             </Button>
                           </Link>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-destructive hover:text-destructive"
+                            className="size-7 text-destructive hover:text-destructive"
                             onClick={() => setDeleteDialog({ open: true, id: transaction.id })}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="size-3.5" />
                           </Button>
                         </div>
                       </TableCell>
@@ -247,7 +244,7 @@ export default function BonPage() {
                 Batal
               </Button>
               <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
-                {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isDeleting && <Loader2 className="mr-2 size-4 animate-spin" />}
                 Hapus
               </Button>
             </DialogFooter>

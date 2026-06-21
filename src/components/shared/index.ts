@@ -1,6 +1,6 @@
 export { PageHeader } from './PageHeader'
 export type { PageHeaderStat } from './PageHeader'
-export { StatCard, accentMap } from './StatCard'
+export { StatCard } from './StatCard'
 export type { StatAccent } from './StatCard'
 export { StatusBadge, transactionStatusVariant, BonusPill, ColorBadge } from './StatusBadge'
 export type { StatusVariant } from './StatusBadge'

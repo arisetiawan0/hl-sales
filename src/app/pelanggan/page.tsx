@@ -47,7 +47,6 @@ export default function PelangganPage() {
     c.name.toLowerCase().includes(search.toLowerCase())
   )
 
-  // Compute stats
   const stats = useMemo(() => {
     const activeCustomers = customers.filter((c) => !c.deletedAt)
     const withBonus = activeCustomers.filter((c) => c.bonusThreshold > 0)
@@ -63,9 +62,9 @@ export default function PelangganPage() {
 
     return [
       { label: 'Total', value: activeCustomers.length, icon: Users },
-      { label: 'Pelanggan Aktif', value: activeCustomers.length, icon: Users },
-      { label: 'Dengan Bonus', value: withBonus.length, icon: Gift },
-      { label: 'Rata-rata Disc LM', value: `${avgDiscount.toFixed(1)}%`, icon: TrendingUp },
+      { label: 'Aktif', value: activeCustomers.length, icon: Users },
+      { label: 'Bonus', value: withBonus.length, icon: Gift },
+      { label: 'Avg Disc', value: `${avgDiscount.toFixed(0)}%`, icon: TrendingUp },
     ]
   }, [customers])
 
@@ -89,7 +88,7 @@ export default function PelangganPage() {
     return (
       <AppShell>
         <div className="flex items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'var(--muted-foreground)' }} />
+          <Loader2 className="h-5 w-5 animate-spin" style={{ color: 'var(--muted-foreground)' }} />
         </div>
       </AppShell>
     )
@@ -97,7 +96,7 @@ export default function PelangganPage() {
 
   return (
     <AppShell>
-      <div className="space-y-6">
+      <div className="space-y-5">
         <PageHeader
           title="Pelanggan"
           subtitle="Kelola data pelanggan HL Sales"
@@ -106,51 +105,49 @@ export default function PelangganPage() {
           stats={stats}
           actions={
             <Link href="/pelanggan/tambah">
-              <Button size="sm" className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm">
-                <Users className="mr-1.5 h-4 w-4" />
-                Tambah Pelanggan
+              <Button size="sm" className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm text-xs">
+                <Users className="mr-1.5 size-3.5" />
+                Tambah
               </Button>
             </Link>
           }
         />
 
-        {/* Filter bar */}
         <div className="flex items-center gap-3">
-          <div className="relative flex-1 max-w-sm">
+          <div className="relative flex-1 max-w-xs">
             <Input
               placeholder="Cari pelanggan..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
+              className="h-9 text-xs"
             />
           </div>
         </div>
 
-        {/* Table */}
-        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: 'var(--card)' }}>
-          <Table>
+        <div className="rounded-xl border overflow-x-auto" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
+          <Table className="min-w-[600px]">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">No</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Nama</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Disc LM</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Disc BR</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Ambang Bonus</TableHead>
-                <TableHead className="text-right text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Aksi</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-semibold h-10">No</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-semibold h-10">Nama</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-semibold h-10">Disc LM</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-semibold h-10">Disc BR</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-semibold h-10">Ambang Bonus</TableHead>
+                <TableHead className="text-right text-[10px] uppercase tracking-wider font-semibold h-10">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredCustomers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-12">
-                    <div className="flex flex-col items-center gap-2">
-                      <Users className="h-8 w-8" style={{ color: 'var(--muted-foreground)' }} />
-                      <p className="text-sm font-medium" style={{ color: 'var(--muted-foreground)' }}>
+                  <TableCell colSpan={6} className="text-center py-10">
+                    <div className="flex flex-col items-center gap-1.5">
+                      <Users className="size-6" style={{ color: 'var(--muted-foreground)' }} />
+                      <p className="text-xs font-medium" style={{ color: 'var(--muted-foreground)' }}>
                         {search ? 'Pelanggan tidak ditemukan' : 'Belum ada data pelanggan'}
                       </p>
                       {!search && (
                         <Link href="/pelanggan/tambah">
-                          <Button variant="link" size="sm">Tambah pelanggan pertama</Button>
+                          <Button variant="link" size="sm" className="text-xs">Tambah pelanggan pertama</Button>
                         </Link>
                       )}
                     </div>
@@ -170,45 +167,45 @@ export default function PelangganPage() {
                     .join(' → ')
 
                   return (
-                    <TableRow key={customer.id} className="hover:bg-muted/50 transition-colors">
-                      <TableCell className="text-sm text-muted-foreground">{index + 1}</TableCell>
-                      <TableCell className="font-medium">{customer.name}</TableCell>
+                    <TableRow key={customer.id}>
+                      <TableCell className="text-xs text-muted-foreground">{index + 1}</TableCell>
+                      <TableCell className="text-xs font-medium">{customer.name}</TableCell>
                       <TableCell>
                         <StatusBadge variant={lmDiscounts ? 'info' : 'neutral'} showIcon={false}>
-                          {lmDiscounts || '-'}
+                          <span className="text-[11px]">{lmDiscounts || '-'}</span>
                         </StatusBadge>
                       </TableCell>
                       <TableCell>
                         <StatusBadge variant={brDiscounts ? 'violet' : 'neutral'} showIcon={false}>
-                          {brDiscounts || '-'}
+                          <span className="text-[11px]">{brDiscounts || '-'}</span>
                         </StatusBadge>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-xs">
                         {customer.bonusThreshold > 0 ? (
-                          <span className="text-sm font-medium">{formatCurrency(customer.bonusThreshold)}</span>
+                          <span className="font-medium">{formatCurrency(customer.bonusThreshold)}</span>
                         ) : (
-                          <span className="text-sm text-muted-foreground">-</span>
+                          <span style={{ color: 'var(--muted-foreground)' }}>-</span>
                         )}
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1">
+                        <div className="flex items-center justify-end gap-0.5">
                           <Link href={`/pelanggan/${customer.id}`}>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <Eye className="h-4 w-4" />
+                            <Button variant="ghost" size="icon" className="size-7">
+                              <Eye className="size-3.5" />
                             </Button>
                           </Link>
                           <Link href={`/pelanggan/${customer.id}/edit`}>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <Edit className="h-4 w-4" />
+                            <Button variant="ghost" size="icon" className="size-7">
+                              <Edit className="size-3.5" />
                             </Button>
                           </Link>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-destructive hover:text-destructive"
+                            className="size-7 text-destructive hover:text-destructive"
                             onClick={() => setDeleteDialog({ open: true, id: customer.id })}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="size-3.5" />
                           </Button>
                         </div>
                       </TableCell>
@@ -233,7 +230,7 @@ export default function PelangganPage() {
                 Batal
               </Button>
               <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
-                {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isDeleting && <Loader2 className="mr-2 size-4 animate-spin" />}
                 Hapus
               </Button>
             </DialogFooter>

@@ -57,7 +57,6 @@ export default function ProdukPage() {
     return matchesSearch && matchesType
   })
 
-  // Compute stats
   const stats = useMemo(() => {
     const activeProducts = products.filter((p) => !p.deletedAt)
     const typeLM = activeProducts.filter((p) => p.type === 'LM').length
@@ -67,10 +66,10 @@ export default function ProdukPage() {
       : 0
 
     return [
-      { label: 'Total Produk', value: activeProducts.length, icon: Package },
-      { label: 'Tipe LM', value: typeLM, icon: Tag },
-      { label: 'Tipe BR', value: typeBR, icon: Tag },
-      { label: 'Rata-rata Harga', value: formatCurrency(avgPrice), icon: Package },
+      { label: 'Total', value: activeProducts.length, icon: Package },
+      { label: 'LM', value: typeLM, icon: Tag },
+      { label: 'BR', value: typeBR, icon: Tag },
+      { label: 'Avg Harga', value: formatCurrency(avgPrice), icon: Package },
     ]
   }, [products])
 
@@ -94,7 +93,7 @@ export default function ProdukPage() {
     return (
       <AppShell>
         <div className="flex items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'var(--muted-foreground)' }} />
+          <Loader2 className="h-5 w-5 animate-spin" style={{ color: 'var(--muted-foreground)' }} />
         </div>
       </AppShell>
     )
@@ -102,7 +101,7 @@ export default function ProdukPage() {
 
   return (
     <AppShell>
-      <div className="space-y-6">
+      <div className="space-y-5">
         <PageHeader
           title="Produk"
           subtitle="Kelola katalog produk HL Sales"
@@ -111,61 +110,59 @@ export default function ProdukPage() {
           stats={stats}
           actions={
             <Link href="/produk/tambah">
-              <Button size="sm" className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm">
-                <Package className="mr-1.5 h-4 w-4" />
-                Tambah Produk
+              <Button size="sm" className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm text-xs">
+                <Package className="mr-1.5 size-3.5" />
+                Tambah
               </Button>
             </Link>
           }
         />
 
-        {/* Filter bar */}
-        <div className="flex items-center gap-3">
-          <div className="relative flex-1 max-w-sm">
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1 max-w-xs">
             <Input
               placeholder="Cari produk..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
+              className="h-9 text-xs"
             />
           </div>
           <Select value={filterType} onValueChange={(v) => v && setFilterType(v)}>
-            <SelectTrigger className="w-36">
-              <SelectValue placeholder="Semua Tipe" />
+            <SelectTrigger className="w-28 h-9 text-xs">
+              <SelectValue placeholder="Semua" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Semua Tipe</SelectItem>
+              <SelectItem value="all">Semua</SelectItem>
               <SelectItem value="LM">LM</SelectItem>
               <SelectItem value="BR">BR</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        {/* Table */}
-        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: 'var(--card)' }}>
-          <Table>
+        <div className="rounded-xl border overflow-x-auto" style={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }}>
+          <Table className="min-w-[600px]">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">No</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Nama</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Tipe</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Harga Modal</TableHead>
-                <TableHead className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Harga Jual</TableHead>
-                <TableHead className="text-right text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Aksi</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-semibold h-10">No</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-semibold h-10">Nama</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-semibold h-10">Tipe</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-semibold h-10">Harga Modal</TableHead>
+                <TableHead className="text-[10px] uppercase tracking-wider font-semibold h-10">Harga Jual</TableHead>
+                <TableHead className="text-right text-[10px] uppercase tracking-wider font-semibold h-10">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredProducts.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-12">
-                    <div className="flex flex-col items-center gap-2">
-                      <Package className="h-8 w-8" style={{ color: 'var(--muted-foreground)' }} />
-                      <p className="text-sm font-medium" style={{ color: 'var(--muted-foreground)' }}>
+                  <TableCell colSpan={6} className="text-center py-10">
+                    <div className="flex flex-col items-center gap-1.5">
+                      <Package className="size-6" style={{ color: 'var(--muted-foreground)' }} />
+                      <p className="text-xs font-medium" style={{ color: 'var(--muted-foreground)' }}>
                         {search || filterType !== 'all' ? 'Produk tidak ditemukan' : 'Belum ada data produk'}
                       </p>
                       {!search && filterType === 'all' && (
                         <Link href="/produk/tambah">
-                          <Button variant="link" size="sm">Tambah produk pertama</Button>
+                          <Button variant="link" size="sm" className="text-xs">Tambah produk pertama</Button>
                         </Link>
                       )}
                     </div>
@@ -173,30 +170,30 @@ export default function ProdukPage() {
                 </TableRow>
               ) : (
                 filteredProducts.map((product, index) => (
-                  <TableRow key={product.id} className="hover:bg-muted/50 transition-colors">
-                    <TableCell className="text-sm text-muted-foreground">{index + 1}</TableCell>
-                    <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableRow key={product.id}>
+                    <TableCell className="text-xs text-muted-foreground">{index + 1}</TableCell>
+                    <TableCell className="text-xs font-medium">{product.name}</TableCell>
                     <TableCell>
                       <StatusBadge variant={product.type === 'LM' ? 'info' : 'violet'}>
-                        {product.type}
+                        <span className="text-[10px]">{product.type}</span>
                       </StatusBadge>
                     </TableCell>
-                    <TableCell className="text-sm">{formatCurrency(product.costPrice)}</TableCell>
-                    <TableCell className="text-sm font-medium">{formatCurrency(product.basePrice)}</TableCell>
+                    <TableCell className="text-xs tabular-nums">{formatCurrency(product.costPrice)}</TableCell>
+                    <TableCell className="text-xs font-medium tabular-nums">{formatCurrency(product.basePrice)}</TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
+                      <div className="flex items-center justify-end gap-0.5">
                         <Link href={`/produk/${product.id}/edit`}>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Edit className="h-4 w-4" />
+                          <Button variant="ghost" size="icon" className="size-7">
+                            <Edit className="size-3.5" />
                           </Button>
                         </Link>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-destructive hover:text-destructive"
+                          className="size-7 text-destructive hover:text-destructive"
                           onClick={() => setDeleteDialog({ open: true, id: product.id })}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="size-3.5" />
                         </Button>
                       </div>
                     </TableCell>
@@ -220,7 +217,7 @@ export default function ProdukPage() {
                 Batal
               </Button>
               <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
-                {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isDeleting && <Loader2 className="mr-2 size-4 animate-spin" />}
                 Hapus
               </Button>
             </DialogFooter>

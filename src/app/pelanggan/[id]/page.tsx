@@ -246,9 +246,8 @@ export default function PelangganDetailPage() {
             title="Total Piutang"
             value={formatCurrency(monthlyStats?.totalPiutang || 0)}
             icon={DollarSign}
-            description={`Piutang bulan ini`}
+            description="Piutang bulan ini"
             accent="amber"
-            spark={[]}
           />
           <StatCard
             title="Total Paid"
@@ -256,7 +255,6 @@ export default function PelangganDetailPage() {
             icon={CheckCircle2}
             description="Sudah dibayar"
             accent="green"
-            spark={[]}
           />
           <StatCard
             title="Total Omzet"
@@ -264,7 +262,6 @@ export default function PelangganDetailPage() {
             icon={TrendingUp}
             description="Omzet lunas bulan ini"
             accent="violet"
-            spark={[]}
           />
           <StatCard
             title="Bonus Tersedia"
@@ -272,7 +269,6 @@ export default function PelangganDetailPage() {
             icon={Gift}
             description="Bonus siap given"
             accent="cyan"
-            spark={[]}
           />
         </div>
 
@@ -362,8 +358,8 @@ export default function PelangganDetailPage() {
               </div>
 
               {/* transactions table */}
-              <div className="rounded-xl ring-1 ring-foreground/[0.06] overflow-hidden">
-                <table className="w-full">
+              <div className="rounded-xl ring-1 ring-foreground/[0.06] overflow-x-auto">
+                <table className="w-full min-w-[500px]">
                   <thead>
                     <tr style={{ backgroundColor: "var(--muted)" }}>
                       <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Tanggal</th>

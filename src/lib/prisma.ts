@@ -6,7 +6,7 @@ function createPrismaClient() {
   return new PrismaClient({
     datasources: {
       db: {
-        url: process.env.DATABASE_URL + '&connection_limit=5&pool_timeout=30&connect_timeout=15',
+        url: process.env.DATABASE_URL + '&connection_limit=15&pool_timeout=60&connect_timeout=15',
       },
     },
   })
@@ -30,7 +30,8 @@ export async function withRetry<T>(
         (error.message.includes("Can't reach database") ||
           error.message.includes('ECONNREFUSED') ||
           error.message.includes('ETIMEOUT') ||
-          error.message.includes('Connection lost'))
+          error.message.includes('Connection lost') ||
+          error.message.includes('Timed out fetching a new connection'))
 
       if (isConnectionError && attempt < maxRetries) {
         await new Promise((resolve) => setTimeout(resolve, delay * attempt))

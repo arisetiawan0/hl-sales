@@ -9,7 +9,7 @@ import { login as authLogin, logout as authLogout, isAuthenticated as checkAuth 
 interface AuthContextValue {
   isAuthenticated: boolean
   isLoading: boolean
-  login: (username: string, password: string) => boolean
+  login: (password: string) => boolean
   logout: () => void
 }
 
@@ -25,8 +25,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false)
   }, [])
 
-  const login = useCallback((username: string, password: string): boolean => {
-    const success = authLogin(username, password)
+  const login = useCallback((password: string): boolean => {
+    const success = authLogin(password)
     if (success) {
       setIsAuthenticated(true)
     }

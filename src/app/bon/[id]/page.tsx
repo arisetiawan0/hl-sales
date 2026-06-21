@@ -185,8 +185,8 @@ export default function BonDetailPage() {
 
         {/* Products list */}
         <SectionCard title="Daftar Produk" icon={Package} iconAccent="violet">
-          <div className="rounded-xl ring-1 ring-foreground/[0.06] overflow-hidden">
-            <table className="w-full">
+          <div className="rounded-xl ring-1 ring-foreground/[0.06] overflow-x-auto">
+            <table className="w-full min-w-[500px]">
               <thead>
                 <tr style={{ backgroundColor: "var(--muted)" }}>
                   <th className="px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>No</th>
