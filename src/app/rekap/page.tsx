@@ -252,7 +252,15 @@ export default function RekapPage() {
                 <label className="text-[10px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
                   Tipe Rekap
                 </label>
-                <Select value={recapType} onValueChange={(v) => setRecapType(v as "all" | "customer" | "type")}>
+                <Select
+                  value={recapType}
+                  onValueChange={(v) => setRecapType(v as "all" | "customer" | "type")}
+                  items={[
+                    { value: 'all', label: 'Keseluruhan' },
+                    { value: 'customer', label: 'Per Pelanggan' },
+                    { value: 'type', label: 'Per Tipe Produk' },
+                  ]}
+                >
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue />
                   </SelectTrigger>
@@ -269,7 +277,14 @@ export default function RekapPage() {
                   <label className="text-[10px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
                     Pelanggan
                   </label>
-                  <Select value={selectedCustomer} onValueChange={(v) => setSelectedCustomer(v || "all")}>
+                  <Select
+                    value={selectedCustomer}
+                    onValueChange={(v) => setSelectedCustomer(v || "all")}
+                    items={[
+                      { value: 'all', label: 'Semua Pelanggan' },
+                      ...customers.map((c) => ({ value: c.id, label: c.name })),
+                    ]}
+                  >
                     <SelectTrigger className="h-8 text-xs">
                       <SelectValue />
                     </SelectTrigger>
@@ -287,7 +302,18 @@ export default function RekapPage() {
                 <label className="text-[10px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
                   Bulan
                 </label>
-                <Select value={selectedMonth} onValueChange={(v) => setSelectedMonth(v || "all")}>
+                <Select
+                  value={selectedMonth}
+                  onValueChange={(v) => setSelectedMonth(v || "all")}
+                  items={[
+                    { value: 'all', label: 'Semua Bulan' },
+                    ...monthOptions.map((month) => {
+                      const [y, m] = month.split("-")
+                      const date = new Date(Number(y), Number(m) - 1)
+                      return { value: month, label: format(date, "MMMM yyyy", { locale: id }) }
+                    }),
+                  ]}
+                >
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue />
                   </SelectTrigger>
@@ -310,7 +336,14 @@ export default function RekapPage() {
                 <label className="text-[10px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
                   Tahun
                 </label>
-                <Select value={selectedYear} onValueChange={(v) => setSelectedYear(v || "all")}>
+                <Select
+                  value={selectedYear}
+                  onValueChange={(v) => setSelectedYear(v || "all")}
+                  items={[
+                    { value: 'all', label: 'Semua Tahun' },
+                    ...yearOptions.map((year) => ({ value: String(year), label: String(year) })),
+                  ]}
+                >
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue />
                   </SelectTrigger>

@@ -5,6 +5,24 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const customerId = searchParams.get('customerId')
+    const bonNumber = searchParams.get('bonNumber')
+
+    // Lightweight existence check: returns { exists: boolean } instead of
+    // fetching the entire transactions table.
+    if (bonNumber !== null) {
+      const excludeId = searchParams.get('excludeId')
+      const exists = await withRetry(() =>
+        prisma.transaction.findFirst({
+          where: {
+            bonNumber,
+            ...(excludeId ? { NOT: { id: excludeId } } : {}),
+          },
+          select: { id: true },
+        })
+      )
+      return NextResponse.json({ exists: Boolean(exists) })
+    }
+
     const where = customerId ? { customerId } : {}
     const transactions = await withRetry(() =>
       prisma.transaction.findMany({

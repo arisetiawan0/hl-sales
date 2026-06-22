@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { AppShell } from '@/components/layout/AppShell'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { CurrencyInput } from '@/components/ui/currency-input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -224,12 +225,9 @@ export default function BonEditPage() {
   }, [params.id])
 
   useEffect(() => {
-    if (customerId) {
-      customerService.getById(customerId).then(c => setSelectedCustomer(c || null))
-    } else {
-      setSelectedCustomer(null)
-    }
-  }, [customerId])
+    // Customer data is already loaded — no extra API call needed.
+    setSelectedCustomer(customerId ? customers.find(c => c.id === customerId) ?? null : null)
+  }, [customerId, customers])
 
   useEffect(() => {
     if (!selectedCustomer || selectedCustomer.bonusThreshold <= 0) {
@@ -437,7 +435,11 @@ export default function BonEditPage() {
             </div>
 
             <FormField label="Pelanggan" required error={errors.customerId}>
-              <Select value={customerId} onValueChange={(v) => setCustomerId(v || '')}>
+              <Select
+                value={customerId}
+                onValueChange={(v) => setCustomerId(v || '')}
+                items={customers.map(c => ({ value: c.id, label: c.name }))}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Pilih pelanggan" />
                 </SelectTrigger>
@@ -450,12 +452,10 @@ export default function BonEditPage() {
             </FormField>
 
             <FormField label="Ongkir (Rp)" hint="Biaya pengiriman — ditambahkan ke total tagihan">
-              <Input
+              <CurrencyInput
                 id="ongkir"
-                type="number"
-                min={0}
                 value={ongkir}
-                onChange={(e) => setOngkir(e.target.value)}
+                onValueChange={setOngkir}
                 placeholder="0"
               />
             </FormField>
@@ -493,7 +493,14 @@ export default function BonEditPage() {
 
               <div className="flex items-center gap-2 ml-auto">
                 <span className="text-xs font-medium" style={{ color: 'var(--muted-foreground)' }}>Status:</span>
-                <Select value={status} onValueChange={(v) => setStatus(v as 'PIUTANG' | 'LUNAS')}>
+                <Select
+                  value={status}
+                  onValueChange={(v) => setStatus(v as 'PIUTANG' | 'LUNAS')}
+                  items={[
+                    { value: 'PIUTANG', label: 'Piutang' },
+                    { value: 'LUNAS', label: 'Lunas' },
+                  ]}
+                >
                   <SelectTrigger className="w-28">
                     <SelectValue />
                   </SelectTrigger>
@@ -592,7 +599,11 @@ export default function BonEditPage() {
 
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <FormField label="Produk" required error={errors[`item_${index}_product`]}>
-                          <Select value={item.productId} onValueChange={(v) => updateItem(item.id, 'productId', v || '')}>
+                          <Select
+                            value={item.productId}
+                            onValueChange={(v) => updateItem(item.id, 'productId', v || '')}
+                            items={products.map(p => ({ value: p.id, label: `${p.name} (${p.type})` }))}
+                          >
                             <SelectTrigger>
                               <SelectValue placeholder="Pilih..." />
                             </SelectTrigger>

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { AppShell } from '@/components/layout/AppShell'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { CurrencyInput } from '@/components/ui/currency-input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Loader2, PackageX } from 'lucide-react'
@@ -279,13 +280,11 @@ export default function ProdukEditPage() {
               hint="Harga pokok produk — hanya untuk kalkulasi laba, tidak mempengaruhi harga diskon"
               error={errors.costPrice}
             >
-              <Input
+              <CurrencyInput
                 id="costPrice"
-                type="number"
-                min={0}
                 value={costPrice}
-                onChange={(e) => setCostPrice(e.target.value)}
-                placeholder="Contoh: 50000"
+                onValueChange={setCostPrice}
+                placeholder="Contoh: 50.000"
               />
             </FormField>
 
@@ -295,13 +294,11 @@ export default function ProdukEditPage() {
               hint="Harga daftar sebelum diskon diterapkan ke pelanggan"
               error={errors.basePrice}
             >
-              <Input
+              <CurrencyInput
                 id="basePrice"
-                type="number"
-                min={0}
                 value={basePrice}
-                onChange={(e) => setBasePrice(e.target.value)}
-                placeholder="Contoh: 100000"
+                onValueChange={setBasePrice}
+                placeholder="Contoh: 100.000"
               />
             </FormField>
 

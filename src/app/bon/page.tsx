@@ -135,7 +135,15 @@ export default function BonPage() {
               className="h-9 text-xs"
             />
           </div>
-          <Select value={filterStatus} onValueChange={(v) => v && setFilterStatus(v)}>
+          <Select
+            value={filterStatus}
+            onValueChange={(v) => v && setFilterStatus(v)}
+            items={[
+              { value: 'all', label: 'Semua' },
+              { value: 'PIUTANG', label: 'Piutang' },
+              { value: 'LUNAS', label: 'Lunas' },
+            ]}
+          >
             <SelectTrigger className="w-32 h-9 text-xs">
               <SelectValue placeholder="Semua" />
             </SelectTrigger>

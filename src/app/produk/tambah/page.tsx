@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { AppShell } from '@/components/layout/AppShell'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { CurrencyInput } from '@/components/ui/currency-input'
 import { Label } from '@/components/ui/label'
 import { PageHeader } from '@/components/shared'
 import { SectionCard } from '@/components/shared'
@@ -140,18 +141,16 @@ export default function ProdukFormPage() {
               <Label htmlFor="costPrice" className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--muted-foreground)' }}>
                 Harga Modal (Rp)
               </Label>
-              <Input
+              <CurrencyInput
                 id="costPrice"
-                type="number"
-                min="0"
                 value={costPrice}
-                onChange={(e) => setCostPrice(e.target.value)}
-                placeholder="contoh: 50000"
+                onValueChange={setCostPrice}
+                placeholder="contoh: 50.000"
                 className="text-sm max-w-48"
               />
               {errors.costPrice && <p className="text-xs text-destructive">{errors.costPrice}</p>}
               <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
-                Harga pokok produk — hanya用于 kalkulasi laba, tidak afectan harga jual
+                Harga pokok produk — hanya untuk kalkulasi laba, tidak mempengaruhi harga jual
               </p>
             </div>
 
@@ -160,13 +159,11 @@ export default function ProdukFormPage() {
               <Label htmlFor="basePrice" className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--muted-foreground)' }}>
                 Harga Jual (Rp) *
               </Label>
-              <Input
+              <CurrencyInput
                 id="basePrice"
-                type="number"
-                min="0"
                 value={basePrice}
-                onChange={(e) => setBasePrice(e.target.value)}
-                placeholder="contoh: 100000"
+                onValueChange={setBasePrice}
+                placeholder="contoh: 100.000"
                 className="text-sm max-w-48"
               />
               {errors.basePrice && <p className="text-xs text-destructive">{errors.basePrice}</p>}

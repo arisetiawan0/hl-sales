@@ -6,9 +6,9 @@ import Link from 'next/link'
 import { AppShell } from '@/components/layout/AppShell'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { CurrencyInput } from '@/components/ui/currency-input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Plus, Trash2, Loader2, UserX } from 'lucide-react'
 import { toast } from 'sonner'
 import { customerService } from '@/lib/services'
@@ -384,13 +384,11 @@ export default function PelangganEditPage() {
               hint="Jumlah omzet minimal (Rp) untuk mendapatkan bonus"
               error={errors.bonusThreshold}
             >
-              <Input
+              <CurrencyInput
                 id="bonusThreshold"
-                type="number"
-                min={0}
                 value={bonusThreshold}
-                onChange={(e) => setBonusThreshold(e.target.value)}
-                placeholder="Contoh: 10000000"
+                onValueChange={setBonusThreshold}
+                placeholder="Contoh: 10.000.000"
               />
             </FormField>
           </div>

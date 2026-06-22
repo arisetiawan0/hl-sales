@@ -25,7 +25,7 @@ import {
   ArrowLeft,
 } from "lucide-react"
 import { toast } from "sonner"
-import { transactionService, customerService } from "@/lib/services"
+import { transactionService } from "@/lib/services"
 import { formatCurrency, calculateTransactionTotals } from "@/lib/calculations"
 import { Customer, Transaction } from "@/types"
 import { format } from "date-fns"
@@ -48,10 +48,8 @@ export default function BonDetailPage() {
     if (params.id) {
       const trans = await transactionService.getById(params.id as string)
       setTransaction(trans || null)
-      if (trans) {
-        const cust = await customerService.getById(trans.customerId)
-        setCustomer(cust || null)
-      }
+      // The API already includes the customer relation — no extra round-trip needed.
+      setCustomer(trans?.customer ?? null)
     }
   }, [params.id])
 

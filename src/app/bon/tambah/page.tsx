@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { AppShell } from '@/components/layout/AppShell'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { CurrencyInput } from '@/components/ui/currency-input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { PageHeader } from '@/components/shared'
@@ -25,7 +26,6 @@ import {
   Gift,
   FileText,
   ShoppingCart,
-  Sparkles,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { customerService, productService, transactionService } from '@/lib/services'
@@ -59,7 +59,7 @@ export default function BonFormPage() {
   const [ongkir, setOngkir] = useState('')
   const [description, setDescription] = useState('')
   const [isBonus, setIsBonus] = useState(false)
-  const [status, setStatus] = useState<'PIUTANG' | 'LUNAS'>('PIUTANG')
+  const [status, setStatus] = useState<'' | 'PIUTANG' | 'LUNAS'>('')
   const [items, setItems] = useState<LineItem[]>([])
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
@@ -77,12 +77,9 @@ export default function BonFormPage() {
   }, [])
 
   useEffect(() => {
-    if (customerId) {
-      customerService.getById(customerId).then(c => setSelectedCustomer(c || null))
-    } else {
-      setSelectedCustomer(null)
-    }
-  }, [customerId])
+    // Customer data is already loaded — no extra API call needed.
+    setSelectedCustomer(customerId ? customers.find(c => c.id === customerId) ?? null : null)
+  }, [customerId, customers])
 
   useEffect(() => {
     if (!selectedCustomer || selectedCustomer.bonusThreshold <= 0) {
@@ -169,6 +166,7 @@ export default function BonFormPage() {
       newErrors.bonNumber = 'Nomor Bon sudah ada'
     }
     if (!customerId) newErrors.customerId = 'Pelanggan wajib dipilih'
+    if (!status) newErrors.status = 'Status wajib dipilih'
     if (items.length === 0) newErrors.items = 'Minimal satu produk'
     items.forEach((item, i) => {
       if (!item.productId) newErrors[`item_${i}_product`] = 'Produk wajib dipilih'
@@ -208,7 +206,7 @@ export default function BonFormPage() {
         ongkir: Number(ongkir || 0),
         description,
         isBonus,
-        status,
+        status: status as 'PIUTANG' | 'LUNAS',
         paymentDate: status === 'LUNAS' ? new Date() : null,
         items: transactionItems,
       })
@@ -284,7 +282,11 @@ export default function BonFormPage() {
               <Label htmlFor="customer" className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--muted-foreground)' }}>
                 Pelanggan *
               </Label>
-              <Select value={customerId} onValueChange={(v) => setCustomerId(v ?? '')}>
+              <Select
+                value={customerId}
+                onValueChange={(v) => setCustomerId(v ?? '')}
+                items={customers.map(c => ({ value: c.id, label: c.name }))}
+              >
                 <SelectTrigger id="customer" className="w-full text-sm">
                   <SelectValue placeholder="Pilih pelanggan" />
                 </SelectTrigger>
@@ -331,32 +333,35 @@ export default function BonFormPage() {
                 <Label htmlFor="ongkir" className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--muted-foreground)' }}>
                   Ongkir (Rp)
                 </Label>
-                <Input
+                <CurrencyInput
                   id="ongkir"
-                  type="number"
-                  min="0"
                   value={ongkir}
-                  onChange={(e) => setOngkir(e.target.value)}
+                  onValueChange={setOngkir}
                   placeholder="0"
                   className="text-sm max-w-48"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="status" className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--muted-foreground)' }}>
-                  Status
+                  Status *
                 </Label>
                 <Select
                   value={status}
-                  onValueChange={(v) => setStatus(v as 'PIUTANG' | 'LUNAS')}
+                  onValueChange={(v) => setStatus((v ?? '') as '' | 'PIUTANG' | 'LUNAS')}
+                  items={[
+                    { value: 'PIUTANG', label: 'Piutang' },
+                    { value: 'LUNAS', label: 'Lunas' },
+                  ]}
                 >
                   <SelectTrigger id="status" className="w-40 text-sm">
-                    <SelectValue />
+                    <SelectValue placeholder="Pilih status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="PIUTANG">Piutang</SelectItem>
                     <SelectItem value="LUNAS">Lunas</SelectItem>
                   </SelectContent>
                 </Select>
+                {errors.status && <p className="text-xs text-destructive">{errors.status}</p>}
               </div>
             </div>
 
@@ -493,6 +498,7 @@ export default function BonFormPage() {
                           <Select
                             value={item.productId}
                             onValueChange={(v) => updateItem(item.id, 'productId', v ?? '')}
+                            items={products.map(p => ({ value: p.id, label: `${p.name} (${p.type})` }))}
                           >
                             <SelectTrigger className="text-sm w-full">
                               <SelectValue placeholder="Pilih produk" />

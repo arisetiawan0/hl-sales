@@ -1,6 +1,23 @@
 import { Customer, Product, Transaction, TransactionStatus, BonusNotification } from '@/types'
 
+/* -------------------------------------------------------------------------- */
+/*  In-memory GET cache with short TTL                                        */
+/* -------------------------------------------------------------------------- */
+
+const cache = new Map<string, { data: unknown; ts: number }>()
+const CACHE_TTL = 5_000 // 5 seconds — fresh enough for a multi-user app
+
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
+  const isGet = !options?.method || options.method === 'GET'
+
+  // Serve from cache for GET requests within TTL
+  if (isGet) {
+    const cached = cache.get(url)
+    if (cached && Date.now() - cached.ts < CACHE_TTL) {
+      return cached.data as T
+    }
+  }
+
   const res = await fetch(url, {
     headers: { 'Content-Type': 'application/json' },
     ...options,
@@ -9,10 +26,23 @@ async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
     const text = await res.text().catch(() => '')
     throw new Error(`API ${res.status}: ${text || res.statusText}`)
   }
-  return res.json()
+  const data: T = await res.json()
+
+  // Store GET responses in cache
+  if (isGet) {
+    cache.set(url, { data, ts: Date.now() })
+  } else {
+    // Mutations invalidate the whole cache so the next GET is fresh
+    cache.clear()
+  }
+
+  return data
 }
 
-// Customer Service
+/* -------------------------------------------------------------------------- */
+/*  Customer Service                                                          */
+/* -------------------------------------------------------------------------- */
+
 export const customerService = {
   getAll: async (): Promise<Customer[]> => fetchJson('/api/customers'),
   getAllForSelection: async (): Promise<Customer[]> => fetchJson('/api/customers'),
@@ -29,7 +59,10 @@ export const customerService = {
   },
 }
 
-// Product Service
+/* -------------------------------------------------------------------------- */
+/*  Product Service                                                           */
+/* -------------------------------------------------------------------------- */
+
 export const productService = {
   getAll: async (): Promise<Product[]> => fetchJson('/api/products'),
   getAllForSelection: async (): Promise<Product[]> => fetchJson('/api/products'),
@@ -46,13 +79,19 @@ export const productService = {
   },
 }
 
-// Notification Service
+/* -------------------------------------------------------------------------- */
+/*  Notification Service                                                      */
+/* -------------------------------------------------------------------------- */
+
 export const notificationService = {
   getBonusNotifications: async (): Promise<BonusNotification[]> =>
     fetchJson('/api/notifications'),
 }
 
-// Transaction Service
+/* -------------------------------------------------------------------------- */
+/*  Transaction Service                                                       */
+/* -------------------------------------------------------------------------- */
+
 export const transactionService = {
   getAll: async (): Promise<Transaction[]> => fetchJson('/api/transactions'),
   getById: async (id: string): Promise<Transaction | undefined> => {
@@ -83,7 +122,9 @@ export const transactionService = {
     })
   },
   checkBonNumberExists: async (bonNumber: string, excludeId?: string): Promise<boolean> => {
-    const transactions = await fetchJson<Transaction[]>('/api/transactions')
-    return transactions.some(t => t.bonNumber === bonNumber && t.id !== excludeId)
+    const params = new URLSearchParams({ bonNumber })
+    if (excludeId) params.set('excludeId', excludeId)
+    const result = await fetchJson<{ exists: boolean }>(`/api/transactions?${params.toString()}`)
+    return result.exists
   },
 }

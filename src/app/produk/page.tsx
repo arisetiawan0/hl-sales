@@ -127,7 +127,15 @@ export default function ProdukPage() {
               className="h-9 text-xs"
             />
           </div>
-          <Select value={filterType} onValueChange={(v) => v && setFilterType(v)}>
+          <Select
+            value={filterType}
+            onValueChange={(v) => v && setFilterType(v)}
+            items={[
+              { value: 'all', label: 'Semua' },
+              { value: 'LM', label: 'LM' },
+              { value: 'BR', label: 'BR' },
+            ]}
+          >
             <SelectTrigger className="w-28 h-9 text-xs">
               <SelectValue placeholder="Semua" />
             </SelectTrigger>

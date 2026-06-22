@@ -311,7 +311,15 @@ export default function PelangganDetailPage() {
           iconAccent="blue"
           action={
             <div className="flex items-center gap-3">
-              <Select value={selectedMonth} onValueChange={(v) => setSelectedMonth(v || "all")}>
+              <Select
+                value={selectedMonth}
+                onValueChange={(v) => setSelectedMonth(v || "all")}
+                items={monthOptions.map((month) => {
+                  const [y, m] = month.split("-")
+                  const date = new Date(Number(y), Number(m) - 1)
+                  return { value: month, label: format(date, "MMMM yyyy", { locale: id }) }
+                })}
+              >
                 <SelectTrigger size="sm" className="w-44">
                   <SelectValue placeholder="Pilih bulan" />
                 </SelectTrigger>

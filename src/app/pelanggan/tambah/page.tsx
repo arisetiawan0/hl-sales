@@ -5,10 +5,11 @@ import { useParams } from 'next/navigation'
 import { AppShell } from '@/components/layout/AppShell'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { CurrencyInput } from '@/components/ui/currency-input'
 import { Label } from '@/components/ui/label'
 import { PageHeader } from '@/components/shared'
 import { SectionCard } from '@/components/shared'
-import { Plus, Trash2, Loader2, User, Percent, Sparkles, Calculator } from 'lucide-react'
+import { Plus, Trash2, Loader2, User, Percent, Calculator } from 'lucide-react'
 import { toast } from 'sonner'
 import { customerService } from '@/lib/services'
 import { applyCascadingDiscount } from '@/lib/calculations'
@@ -259,13 +260,11 @@ export default function PelangganFormPage() {
               <Label htmlFor="bonusThreshold" className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--muted-foreground)' }}>
                 Ambang Batas Bonus (Rp)
               </Label>
-              <Input
+              <CurrencyInput
                 id="bonusThreshold"
-                type="number"
-                min="0"
                 value={bonusThreshold}
-                onChange={(e) => setBonusThreshold(e.target.value)}
-                placeholder="contoh: 10000000"
+                onValueChange={setBonusThreshold}
+                placeholder="contoh: 10.000.000"
                 className="text-sm max-w-48"
               />
               {errors.bonusThreshold && <p className="text-xs text-destructive">{errors.bonusThreshold}</p>}
