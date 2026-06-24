@@ -81,7 +81,7 @@ export default function LoginPage() {
       {/* Right panel — form */}
       <div className="flex-1 flex items-center justify-center p-6 sm:p-10" style={{ backgroundColor: 'var(--background)' }}>
         <div className="w-full max-w-xs">
-          <div className="lg:hidden flex items-center gap-2 mb-8">
+          <div className="lg:hidden flex items-center justify-center gap-2 mb-8">
             <div
               className="flex size-8 items-center justify-center rounded-lg"
               style={{ background: 'linear-gradient(135deg, oklch(0.55 0.18 250), oklch(0.45 0.2 285))' }}
